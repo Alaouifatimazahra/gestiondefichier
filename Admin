@@ -2,52 +2,33 @@ package frontend;
 
 import java.io.*;
 
-
-public class Personne {
+/**
+ *
+ */
+public class Admin extends Personne {
 
     /**
      * Default constructor
      */
-    public Personne() throws IOException {
-
+    public Admin(int ID,String name, int pass) throws IOException {
+        id=ID;
+        nom=name;
+        password=pass;
     }
 
-    /**
-     *
-     */
-    public int id;
-    public File users = new File("G://userlogin");
-    boolean a=users.createNewFile();
-    public File admins = new File("G://adminlogin");
-    boolean b=admins.createNewFile();
-
-    /**
-     *
-     */
-    public String nom;
-
-    /**
-     *
-     */
-    public int password;
-
-
-
-    /**
-     *
-     */
+    @Override
     public int login() throws IOException {
         int log=0;
         BufferedReader in = null;
         try {
-            in = new BufferedReader(new FileReader(users));
+            in = new BufferedReader(new FileReader(admins));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         String line;
         while ((line = in.readLine()) != null)
         {
-            if (new StringBuilder().append(id).append(nom).append(password).toString()==line){
+            if (id+nom+password==line){
                 log+=1;
             }
         }
@@ -58,148 +39,88 @@ public class Personne {
         }
         return log;
     }
-    public void creer_fich(String path ) throws IOException {
-        int access = login();
-        if ( access !=0){
-            try {
 
-                File file = new File(path);
 
-                if (file.createNewFile()){
-                    System.out.println("Fichier créé!");
-                }else{
-                    System.out.println("Fichier existe déjà.");
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        else {
-            System.out.println("user not found");
-        }
-
-    }
-
-    public void mod_fich(String path) throws IOException {
+    public void adduser(int ID, String name, int pass) throws IOException {
         int access= login();
-        if(access!=0){
-            Runtime rs = Runtime.getRuntime();
-            try {
-                rs.exec("notepad "+path );
-            }
-            catch (IOException e) {
-                System.out.println(e);
-            }
-        }
-        else {
-            System.out.println("user not found");
-        }
+        if (access!=0){
+         try (FileWriter f = new FileWriter("userlogin", true);
+              BufferedWriter b = new BufferedWriter(f);
+              PrintWriter p = new PrintWriter(b);) {
+
+             p.println(new StringBuilder().append('\n').append(ID).append(name).append(pass).toString());
+
+         } catch (IOException i) {
+            i.printStackTrace();
+         }
 
 
+
+     }
     }
 
+ void delete_user(int ID, String name, int pass) throws IOException {
+        int access= login();
+        if (access!=0){
+            File inputFile = new File("G:/userlogin");
+            File tempFile = new File("G:/myTempFile.txt");
 
-    public void sup_fich(String path) throws IOException {
-        int access = login();
-        if (access !=0){
-            try
-            {
-                File f= new File(path);           
-                if(f.delete())                    
-                {
-                    System.out.println(f.getName() + " deleted");   
-                }
-                else
-                {
-                    System.out.println("failed");
-                }
+            BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+
+            String lineToRemove =  new StringBuilder().append(ID).append(name).append(pass).toString();
+            String currentLine;
+
+            while((currentLine = reader.readLine()) != null) {
+                // trim newline when comparing with lineToRemove
+                String trimmedLine = currentLine.trim();
+                if(trimmedLine.equals(lineToRemove)) continue;
+                writer.write(currentLine + System.getProperty("line.separator"));
             }
-            catch(Exception e)
-            {
-                e.printStackTrace();
-            }
-        }
-        else {
-            System.out.println("user not found");
+            writer.close();
+            reader.close();
+            boolean successful = tempFile.renameTo(inputFile);
+
+
         }
     }
-    public void creer_dos(String path) throws IOException {
-        int access = login();
-        if (access !=0){
-        File file = new File(path);
+    public void addadmin(int ID, String name, int pass) throws IOException {
+        int access= login();
+        if (access!=0){
+            try (FileWriter f = new FileWriter("userlogin", true);
+                 BufferedWriter b = new BufferedWriter(f);
+                 PrintWriter p = new PrintWriter(b);) {
 
-        if (file.exists()) {
-            System.out.println("Le dossier existe déjà : " + file.getAbsolutePath());
-        } else {
-            if (file.mkdir()) {
-                System.out.println("Ajout du dossier : " + file.getAbsolutePath());
-            } else {
-                System.out.println("Echec sur le dossier : " + file.getAbsolutePath());
+                p.println(new StringBuilder().append('\n').append(ID).append(name).append(pass).toString());
+
+            } catch (IOException i) {
+                i.printStackTrace();
             }
-        }
-
-    }
-        else {
-            System.out.println("user not found");
         }
     }
-    public void mod_dos(String path, String action) throws IOException {
-        int access = login();
-        if (access !=0) {
+    public  void delete_admin(int ID, String name, int pass) throws IOException {
+        int access= login();
+        if (access!=0){
+            File inputFile = new File("G:/userlogin");
+            File tempFile = new File("G:/myTempFile.txt");
 
-            File file = new File(path);
-            if (action.equals("ajouter_dossier")) {
-                File file1 = new File(path + "\\");
-                if (file1.exists()) {
-                    System.out.println("Le dossier existe déjà : " + file1.getAbsolutePath());
-                } else {
-                    if (file.mkdir()) {
-                        System.out.println("Ajout du dossier : " + file1.getAbsolutePath());
-                    } else {
-                        System.out.println("Echec sur le dossier : " + file1.getAbsolutePath());
-                    }
-                }
+            BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+
+            String lineToRemove =  new StringBuilder().append(ID).append(name).append(pass).toString();
+            String currentLine;
+
+            while((currentLine = reader.readLine()) != null) {
+                // trim newline when comparing with lineToRemove
+                String trimmedLine = currentLine.trim();
+                if(trimmedLine.equals(lineToRemove)) continue;
+                writer.write(currentLine + System.getProperty("line.separator"));
             }
-            else if (action.equals("ajouter_fichier")){
-               try {
+            writer.close();
+            reader.close();
+            boolean successful = tempFile.renameTo(inputFile);
 
-                  File file1=new File(path+"\\");
 
-                   if (file1.createNewFile()){
-                    System.out.println("Fichier créé!");
-                   }
-                   else{
-                    System.out.println("Fichier existe déjà.");
-                }
-
-            }  catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        }
-        else {
-            System.out.println("user not found");
-        }
-    }
-    public void sup_dos(String path) throws IOException {
-        int access = login();
-        if (access != 0) {
-            try {
-                File f = new File(path);          
-                if (f.delete())                      
-                {
-                    System.out.println(f.getName() + " deleted");  
-                } else {
-                    System.out.println("failed");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        else {
-            System.out.println("user not found");
         }
     }
 
