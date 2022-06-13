@@ -1,0 +1,16 @@
+package frontend;
+
+import java.io.*;
+import java.sql.*;  
+
+public class User extends Personne  {
+
+   
+    public User(int ID, String name, int pass) throws IOException{
+           id =ID;
+           nom=name;
+           password=pass;
+    }
+
+
+}
